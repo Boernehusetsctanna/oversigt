@@ -325,6 +325,15 @@ tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-
     <div class="form-row"><label>Fødselsdato</label><input type="date" id="fFodt"></div>
     <div class="form-row"><label>Indmeldelsesdato</label><input type="date" id="fInd"></div>
     <div class="form-row"><label>Bemærkning</label><textarea id="fNote" placeholder="Valgfri note..."></textarea></div>
+    <div class="form-row">
+      <label>Udmeldt fra (valgfri)</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="date" id="fUdmeldt" style="flex:1;">
+        <button type="button" onclick="document.getElementById('fUdmeldt').value=new Date().toISOString().slice(0,10)" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;">I dag</button>
+        <button type="button" onclick="document.getElementById('fUdmeldt').value=''" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;">Ryd</button>
+      </div>
+      <div style="font-size:11px;color:var(--hint);margin-top:2px;">Barnet tæller stadig med i afdelingen og i gennemsnit for perioden inden denne dato.</div>
+    </div>
     <div id="godkendBtn" style="display:none;margin-bottom:12px;">
       <button onclick="godkendFromModal()" style="width:100%;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px;border-radius:var(--r);border:none;background:#2d8a4e;color:#fff;cursor:pointer;">Godkend til venteliste →</button>
     </div>
@@ -506,6 +515,10 @@ function getAfd(b, sim) {
   const fodt = new Date(b.født+'T00:00:00');
   const ind  = b.ind ? new Date(b.ind+'T00:00:00') : null;
   if (b.ønsker) return 'ønsker';
+  if (b.udmeldtDato) {
+    const udDato = new Date(b.udmeldtDato+'T00:00:00');
+    if (sim >= udDato) return 'udmeldt';
+  }
   if (!ind || ind > sim) return 'venteliste';
   if (sim >= new Date(fodt.getFullYear()+6, 7, 1)) return 'udmeldt';
   const er3 = fodt <= new Date(sim.getFullYear()-3, sim.getMonth()+1, 0);
@@ -901,6 +914,7 @@ function openAdd() {
   document.getElementById('fFodt').value='';
   document.getElementById('fInd').value='';
   document.getElementById('fNote').value='';
+  document.getElementById('fUdmeldt').value='';
   document.getElementById('onskerBanner').style.display='none';
   document.getElementById('onskerToggleBtn').style.display='flex';
   document.getElementById('onskerCheck').checked=false;
@@ -918,6 +932,7 @@ function openEdit(i) {
   document.getElementById('fFodt').value=b.født;
   document.getElementById('fInd').value=b.ind||'';
   document.getElementById('fNote').value=b.note||'';
+  document.getElementById('fUdmeldt').value=b.udmeldtDato||'';
   const isOnsker = b.ønsker||false;
   document.getElementById('onskerBanner').style.display = isOnsker ? 'flex' : 'none';
   document.getElementById('onskerToggleBtn').style.display = isOnsker ? 'none' : 'flex';
@@ -934,15 +949,16 @@ function saveChild() {
   const fodt=document.getElementById('fFodt').value;
   const ind=document.getElementById('fInd').value||null;
   const note=document.getElementById('fNote').value.trim();
+  const udmeldtDato=document.getElementById('fUdmeldt').value||null;
   const ønsker = document.getElementById('onskerCheck') ? document.getElementById('onskerCheck').checked : false;
   if (!navn||!fodt){ showToast('Navn og fødselsdato er påkrævet'); return; }
   if (editIdx!==null) {
     const tilfojet=children[editIdx].tilfojet;
-    children[editIdx]={navn,født:fodt,ind,note,tilfojet,ønsker};
+    children[editIdx]={navn,født:fodt,ind,note,tilfojet,ønsker,udmeldtDato};
     showToast(navn+' er opdateret');
   } else {
     const nextNum = Math.max(0, ...children.map(c=>typeof c.tilfojet==='number'&&c.tilfojet<10000?c.tilfojet:0)) + 1;
-    children.push({navn,født:fodt,ind,note,tilfojet:nextNum,ønsker});
+    children.push({navn,født:fodt,ind,note,tilfojet:nextNum,ønsker,udmeldtDato});
     showToast(navn+' er tilføjet');
   }
   persist(); closeModal(); renderLeft(); renderRight();

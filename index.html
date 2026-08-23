@@ -456,6 +456,7 @@ let simYear=now.getFullYear(), simMonth=now.getMonth();
 let selectedIdx=null;
 let sortKey='ind', sortDir=1;
 let activeFilter='aktive';
+let collapsedUdmeldtYears = null; // initialiseres første gang udmeldte-listen bygges
 
 function getSimDate(){ return new Date(simYear,simMonth,1); }
 function stepMonth(d){ simMonth+=d; if(simMonth>11){simMonth=0;simYear++;} if(simMonth<0){simMonth=11;simYear--;} renderRight(); }
@@ -540,6 +541,18 @@ function fmtDate(d) {
   if (!d) return '—';
   const [y,mo,da] = d.split('-');
   return da+'.'+mo+'.'+y;
+}
+
+function getUdmeldtYear(b) {
+  if (b.udmeldtDato) return parseInt(b.udmeldtDato.slice(0,4), 10);
+  const fodt = new Date(b.født+'T00:00:00');
+  return fodt.getFullYear()+6; // auto-udmeldt 1. august dette år
+}
+
+function toggleUdmeldtYear(year) {
+  if (collapsedUdmeldtYears.has(year)) collapsedUdmeldtYears.delete(year);
+  else collapsedUdmeldtYears.add(year);
+  renderLeft();
 }
 
 // ── SEARCH SUGGESTIONS ──
@@ -657,7 +670,7 @@ function renderLeft() {
 
   const afdMap = { vuggestue:{bg:'var(--vu-bg)',c:'var(--vu)',label:'Vuggestue'}, boernehave:{bg:'var(--bh-bg)',c:'var(--bh)',label:'Børnehave'}, skolestart:{bg:'var(--sk-bg)',c:'var(--sk)',label:'BH – skolestart'}, venteliste:{bg:'var(--vl-bg)',c:'var(--vl)',label:'Venteliste'}, ønsker:{bg:'#fff8e6',c:'#7a5c00',label:'Ønsker'}, udmeldt:{bg:'var(--ud-bg)',c:'var(--ud)',label:'Udmeldt'} };
 
-  document.getElementById('listBody').innerHTML = rows.map(b => {
+  function rowHtml(b) {
     const afd = getAfd(b, sim);
     const s = afdMap[afd];
     const sel = b.i===selectedIdx ? 'selected' : '';
@@ -670,6 +683,40 @@ function renderLeft() {
       <td style="text-align:center">${b.note?`<span class="note-dot" title="${b.note}"></span>`:''}</td>
       <td class="td-mono" style="color:var(--hint)">${tilf}</td>
     </tr>`;
+  }
+
+  const isUdmeldteView = activeFilter==='udmeldte' && !q2;
+
+  if (!isUdmeldteView) {
+    document.getElementById('listBody').innerHTML = rows.map(rowHtml).join('');
+    return;
+  }
+
+  // ── Gruppér udmeldte børn efter år ──
+  const byYear = {};
+  rows.forEach(b => {
+    const y = getUdmeldtYear(b);
+    if (!byYear[y]) byYear[y] = [];
+    byYear[y].push(b);
+  });
+  const years = Object.keys(byYear).map(Number).sort((a,b)=>b-a);
+
+  if (collapsedUdmeldtYears===null) {
+    // Første gang: fold alle år sammen undtagen det nyeste
+    collapsedUdmeldtYears = new Set(years.slice(1));
+  }
+
+  document.getElementById('listBody').innerHTML = years.map(y => {
+    const kids = byYear[y];
+    const collapsed = collapsedUdmeldtYears.has(y);
+    const rowsHtml = collapsed ? '' : kids.map(rowHtml).join('');
+    return `<tr class="udmeldt-year-hdr" data-yeartoggle="${y}" style="cursor:pointer;background:var(--surface2);">
+      <td colspan="6" style="padding:8px 20px;font-size:11px;font-weight:700;color:var(--ud);display:flex;align-items:center;gap:8px;">
+        <span style="transition:transform .15s;display:inline-block;transform:rotate(${collapsed?'-90deg':'0deg'});font-size:9px;color:var(--hint);">▼</span>
+        Udmeldt ${y}
+        <span style="background:var(--ud-bg);color:var(--ud);font-size:10px;font-weight:700;padding:1px 8px;border-radius:99px;">${kids.length}</span>
+      </td>
+    </tr>${rowsHtml}`;
   }).join('');
 }
 
@@ -829,6 +876,12 @@ function toggleSec(id){ document.getElementById(id).classList.toggle('collapsed'
 let _kidTimer = null;
 
 document.addEventListener('click', e => {
+  // Udmeldt year group headers
+  const yearHdr = e.target.closest('tr[data-yeartoggle]');
+  if (yearHdr) {
+    toggleUdmeldtYear(parseInt(yearHdr.dataset.yeartoggle));
+    return;
+  }
   // Right panel kid cells
   const cell = e.target.closest('.kid-cell[data-idx]');
   if (cell) {

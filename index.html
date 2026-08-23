@@ -711,10 +711,11 @@ function renderLeft() {
     const collapsed = collapsedUdmeldtYears.has(y);
     const rowsHtml = collapsed ? '' : kids.map(rowHtml).join('');
     return `<tr class="udmeldt-year-hdr" data-yeartoggle="${y}" style="cursor:pointer;background:var(--surface2);">
-      <td colspan="6" style="padding:8px 20px;font-size:11px;font-weight:700;color:var(--ud);display:flex;align-items:center;gap:8px;">
-        <span style="transition:transform .15s;display:inline-block;transform:rotate(${collapsed?'-90deg':'0deg'});font-size:9px;color:var(--hint);">▼</span>
-        Udmeldt ${y}
-        <span style="background:var(--ud-bg);color:var(--ud);font-size:10px;font-weight:700;padding:1px 8px;border-radius:99px;">${kids.length}</span>
+      <td colspan="6" style="padding:8px 20px;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--ud);">
+          <span style="transition:transform .15s;display:inline-block;transform:rotate(${collapsed?'-90deg':'0deg'});font-size:9px;color:var(--hint);">▼</span>
+          Udmeldt ${y} (${kids.length})
+        </div>
       </td>
     </tr>${rowsHtml}`;
   }).join('');

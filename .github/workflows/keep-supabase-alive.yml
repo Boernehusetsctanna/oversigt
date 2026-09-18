@@ -1,0 +1,18 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Kører hver dag kl. 06:00 UTC (kl. 08:00 dansk tid)
+    - cron: '0 6 * * *'
+  workflow_dispatch: # gør det muligt også at køre den manuelt
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase database
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            "https://zmcxmvewytdedmhbhygi.supabase.co/rest/v1/boerneoversigt_data?select=id&limit=1" \
+            -H "apikey: sb_publishable_Ea6NoaJ_rzJGnCo1BPhj6w_6rjRPihv" \
+            -H "Authorization: Bearer sb_publishable_Ea6NoaJ_rzJGnCo1BPhj6w_6rjRPihv"

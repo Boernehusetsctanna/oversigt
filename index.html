@@ -326,6 +326,13 @@ tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-
     <div class="form-row"><label>Indmeldelsesdato</label><input type="date" id="fInd"></div>
     <div class="form-row"><label>Bemærkning</label><textarea id="fNote" placeholder="Valgfri note..."></textarea></div>
     <div class="form-row">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;">
+        <input type="checkbox" id="fSkoleudsat" onchange="updateSkoleudsatHint()" style="width:15px;height:15px;accent-color:var(--sk-mid);cursor:pointer;">
+        Skoleudsat (går et ekstra år i børnehave)
+      </label>
+      <div id="skoleudsatHint" style="font-size:11px;color:var(--hint);margin-top:2px;"></div>
+    </div>
+    <div class="form-row">
       <label>Udmeldt fra (valgfri)</label>
       <div style="display:flex;gap:8px;align-items:center;">
         <input type="date" id="fUdmeldt" style="flex:1;">
@@ -521,10 +528,18 @@ function getAfd(b, sim) {
     if (sim >= udDato) return 'udmeldt';
   }
   if (!ind || ind > sim) return 'venteliste';
-  if (sim >= new Date(fodt.getFullYear()+6, 7, 1)) return 'udmeldt';
+  const skoleAar = getSkoleAar(b);
+  if (sim >= new Date(skoleAar, 7, 1)) return 'udmeldt';
   const er3 = fodt <= new Date(sim.getFullYear()-3, sim.getMonth()+1, 0);
-  if (er3) return sim >= new Date(fodt.getFullYear()+5, 7, 1) ? 'skolestart' : 'boernehave';
+  if (er3) return sim >= new Date(skoleAar-1, 7, 1) ? 'skolestart' : 'boernehave';
   return 'vuggestue';
+}
+
+// Året barnet starter i skole (1. august). Normalt det år de fylder 6,
+// men et år senere hvis barnet er skoleudsat.
+function getSkoleAar(b) {
+  const fodt = new Date(b.født+'T00:00:00');
+  return fodt.getFullYear() + 6 + (b.skoleudsat ? 1 : 0);
 }
 
 function ageStr(fodt, sim) {
@@ -545,8 +560,7 @@ function fmtDate(d) {
 
 function getUdmeldtYear(b) {
   if (b.udmeldtDato) return parseInt(b.udmeldtDato.slice(0,4), 10);
-  const fodt = new Date(b.født+'T00:00:00');
-  return fodt.getFullYear()+6; // auto-udmeldt 1. august dette år
+  return getSkoleAar(b); // auto-udmeldt 1. august det år barnet starter i skole
 }
 
 function toggleUdmeldtYear(year) {
@@ -805,7 +819,7 @@ function renderRight() {
               <div class="kid-name">${b.navn}</div>
               ${b.note?`<div class="skolestart-dot" style="background:var(--sk-mid)" title="Har en bemærkning"></div>`:''}
             </div>
-            <div class="kid-age">${ageStr(b.født,sim)}${b.isSkolestart?' · <span style=\'color:var(--sk);font-weight:500\'>Skolestart</span>':''}</div>
+            <div class="kid-age">${ageStr(b.født,sim)}${b.isSkolestart?' · <span style=\'color:var(--sk);font-weight:500\'>Skolestart</span>':''}${b.skoleudsat?' · <span style=\'color:var(--muted);font-weight:500\'>Skoleudsat</span>':''}</div>
             ${b.ønsker?`<button onclick="godkendOnsker(${b.i},event)" style="margin-top:5px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;border:1px solid #c49a2a;background:#fff8e6;color:#7a5c00;cursor:pointer;">Godkend →</button>`:''}
           </div>`).join('')}</div>`;
     return `<div class="cal-section${isCollapsed?' collapsed':''}" id="cs-${s.key}">
@@ -834,8 +848,8 @@ function getKidHighlight(b, sim) {
   // Green: rykket op fra vuggestue til børnehave denne måned
   if (afdNow==='boernehave' && (afdPrev==='vuggestue' || afdPrev==='venteliste')) return 'kc-green';
 
-  // Red: udmeldes inden for 2 måneder (skolestart = 1. aug det år de fylder 6)
-  const skolestart = new Date(fodt.getFullYear()+6, 7, 1);
+  // Red: udmeldes inden for 2 måneder (skolestart = 1. aug det år de fylder 6, +1 år hvis skoleudsat)
+  const skolestart = new Date(getSkoleAar(b), 7, 1);
   if (skolestart > sim && skolestart <= twoMonthsOut) return 'kc-red';
 
   // Yellow: rykker fra vuggestue til børnehave inden for 2 måneder
@@ -969,6 +983,8 @@ function openAdd() {
   document.getElementById('fInd').value='';
   document.getElementById('fNote').value='';
   document.getElementById('fUdmeldt').value='';
+  document.getElementById('fSkoleudsat').checked=false;
+  updateSkoleudsatHint();
   document.getElementById('onskerBanner').style.display='none';
   document.getElementById('onskerToggleBtn').style.display='flex';
   document.getElementById('onskerCheck').checked=false;
@@ -987,6 +1003,8 @@ function openEdit(i) {
   document.getElementById('fInd').value=b.ind||'';
   document.getElementById('fNote').value=b.note||'';
   document.getElementById('fUdmeldt').value=b.udmeldtDato||'';
+  document.getElementById('fSkoleudsat').checked=!!b.skoleudsat;
+  updateSkoleudsatHint();
   const isOnsker = b.ønsker||false;
   document.getElementById('onskerBanner').style.display = isOnsker ? 'flex' : 'none';
   document.getElementById('onskerToggleBtn').style.display = isOnsker ? 'none' : 'flex';
@@ -998,21 +1016,36 @@ function openEdit(i) {
 
 function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
 
+// Viser hvornår barnet starter i skole, ud fra fødselsdato og skoleudsættelse
+function updateSkoleudsatHint() {
+  const fodt = document.getElementById('fFodt').value;
+  const udsat = document.getElementById('fSkoleudsat').checked;
+  const el = document.getElementById('skoleudsatHint');
+  if (!fodt) { el.textContent=''; return; }
+  const aar = parseInt(fodt.slice(0,4),10) + 6 + (udsat?1:0);
+  el.textContent = 'Starter i skole 1. august '+aar+(udsat?' (et år senere end normalt)':'');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const f = document.getElementById('fFodt');
+  if (f) f.addEventListener('change', updateSkoleudsatHint);
+});
+
 function saveChild() {
   const navn=document.getElementById('fNavn').value.trim();
   const fodt=document.getElementById('fFodt').value;
   const ind=document.getElementById('fInd').value||null;
   const note=document.getElementById('fNote').value.trim();
   const udmeldtDato=document.getElementById('fUdmeldt').value||null;
+  const skoleudsat=document.getElementById('fSkoleudsat').checked;
   const ønsker = document.getElementById('onskerCheck') ? document.getElementById('onskerCheck').checked : false;
   if (!navn||!fodt){ showToast('Navn og fødselsdato er påkrævet'); return; }
   if (editIdx!==null) {
     const tilfojet=children[editIdx].tilfojet;
-    children[editIdx]={navn,født:fodt,ind,note,tilfojet,ønsker,udmeldtDato};
+    children[editIdx]={...children[editIdx],navn,født:fodt,ind,note,tilfojet,ønsker,udmeldtDato,skoleudsat};
     showToast(navn+' er opdateret');
   } else {
     const nextNum = Math.max(0, ...children.map(c=>typeof c.tilfojet==='number'&&c.tilfojet<10000?c.tilfojet:0)) + 1;
-    children.push({navn,født:fodt,ind,note,tilfojet:nextNum,ønsker,udmeldtDato});
+    children.push({navn,født:fodt,ind,note,tilfojet:nextNum,ønsker,udmeldtDato,skoleudsat});
     showToast(navn+' er tilføjet');
   }
   persist(); closeModal(); renderLeft(); renderRight();

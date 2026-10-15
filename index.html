@@ -4,131 +4,137 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Børnehuset Sct. Anna – Børneoversigt</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --bg:#f4f2ed; --surface:#fff; --surface2:#f0ede7; --border:#e3dfd7;
-  --text:#1a1916; --muted:#7a7670; --hint:#b5b0a8;
-  --vu:#6b3fa0; --vu-bg:#f0ebfa; --vu-mid:#9b6dd0;
-  --bh:#1f5c9e; --bh-bg:#e8f0fb; --bh-mid:#5f93d0;
-  --sk:#a05c10; --sk-bg:#fdf0de; --sk-mid:#de952c;
-  --vl:#5a5550; --vl-bg:#eeebe6; --vl-mid:#9e9990;
-  --ud:#9e2a2a; --ud-bg:#fce9e9; --ud-mid:#d07070;
-  --r:8px; --rl:14px;
+  --bg:#f6f7f9; --surface:#fff; --surface2:#f1f3f6; --border:#e3e6eb;
+  --text:#1c1e22; --muted:#666b74; --hint:#a2a7b0;
+  --accent:#2f6b4f; --accent-hover:#25573f; --accent-bg:#e9f3ee;
+  --hdr-bg:#e8ecf1;
+  --vu:#6a4fc2; --vu-bg:#f1eefc; --vu-mid:#9b84e6;
+  --bh:#2463b5; --bh-bg:#eaf2fd; --bh-mid:#5d95e0;
+  --sk:#a2600c; --sk-bg:#fdf3e1; --sk-mid:#e2a13c;
+  --vl:#5c6068; --vl-bg:#eef0f3; --vl-mid:#9ca1aa;
+  --ud:#b23b3b; --ud-bg:#fcedec; --ud-mid:#e28a85;
+  --r:10px; --rl:16px;
 }
+:root{ --ss:#1f6b45; --ss-bg:#e2f3e9; --ss-line:#bfe2cc; --su:#865a00; --su-bg:#fdf1d2; --su-line:#efd58f; }
+.su-tag,.ss-tag{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;letter-spacing:.2px;vertical-align:1px;}
+.su-tag{background:var(--su-bg);color:var(--su);border:1px solid var(--su-line);}
+.ss-tag{background:var(--ss-bg);color:var(--ss);border:1px solid var(--ss-line);}
 *{box-sizing:border-box;margin:0;padding:0;}
 html{height:100%;} body{height:100%;overflow:hidden;min-width:1000px;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;display:flex;flex-direction:column;}
+body{font-family:'Figtree',sans-serif;background:var(--bg);color:var(--text);font-size:14px;display:flex;flex-direction:column;font-weight:500;}
 
 header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:68px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:10;min-width:1000px;}
-.logo{font-size:22px;font-weight:600;letter-spacing:-.5px;display:flex;align-items:center;gap:9px;}
+.logo{font-size:23px;font-weight:700;letter-spacing:-.5px;display:flex;align-items:center;gap:9px;}
 .logo-dot{display:none;}
-.header-right{margin-left:auto;font-size:11px;color:var(--hint);}
+.header-right{margin-left:auto;font-size:12px;color:var(--hint);}
 
 .workspace{flex:1;display:flex;overflow:hidden;min-height:0;min-width:1000px;}
 
 /* LEFT */
 .left-panel{width:620px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
 .panel-header{padding:11px 20px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
-.panel-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);flex:1;}
+.panel-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);flex:1;}
 .filter-bar{display:flex;gap:4px;padding:8px 16px;border-bottom:1px solid var(--border);}
-.filter-btn{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;padding:4px 10px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .12s;white-space:nowrap;}
+.filter-btn{font-family:'Figtree',sans-serif;font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .12s;white-space:nowrap;}
 .filter-btn:hover{border-color:var(--hint);color:var(--text);}
-.filter-btn.active{background:var(--text);color:#fff;border-color:var(--text);}
+.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 .search-wrap{position:relative;padding:8px 16px;border-bottom:1px solid var(--border);}
-.search-icon{position:absolute;left:25px;top:50%;transform:translateY(-50%);color:var(--hint);font-size:13px;pointer-events:none;line-height:1;}
-.search-box{width:100%;padding:7px 10px 7px 28px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;transition:border-color .15s;}
-.search-box:focus{border-color:var(--vu-mid);}
+.search-icon{position:absolute;left:25px;top:50%;transform:translateY(-50%);color:var(--hint);font-size:14px;pointer-events:none;line-height:1;}
+.search-box{width:100%;padding:7px 10px 7px 28px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);font-family:'Figtree',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .15s;}
+.search-box:focus{border-color:var(--accent);}
 .suggestions{position:absolute;top:100%;left:12px;right:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.08);z-index:50;max-height:200px;overflow-y:auto;display:none;}
 .suggestions.open{display:block;}
-.suggestion-item{padding:7px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:background .1s;}
+.suggestion-item{padding:7px 12px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:background .1s;}
 .suggestion-item:hover{background:var(--surface2);}
-.suggestion-item-name{font-weight:500;color:var(--text);}
-.suggestion-item-afd{font-size:11px;padding:2px 6px;border-radius:99px;}
+.suggestion-item-name{font-weight:600;color:var(--text);}
+.suggestion-item-afd{font-size:12px;padding:2px 6px;border-radius:99px;}
 .list-wrap{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;padding-left:6px;}
 table{width:100%;border-collapse:collapse;table-layout:fixed;}
 col.cn{width:28%;}col.cf{width:16%;}col.ci{width:16%;}col.ca{width:19%;}col.co{width:7%;}col.ct{width:14%;}
-thead th{position:sticky;top:0;z-index:2;background:var(--bg);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--hint);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;cursor:pointer;user-select:none;white-space:nowrap;} thead th:first-child{padding-left:20px;} tbody td:first-child{padding-left:20px;}
+thead th{position:sticky;top:0;z-index:2;background:var(--bg);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--hint);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;cursor:pointer;user-select:none;white-space:nowrap;} thead th:first-child{padding-left:20px;} tbody td:first-child{padding-left:20px;}
 thead th:hover{color:var(--muted);}
 thead th.sort-active{color:var(--text);}
-.sort-arrow{margin-left:3px;font-size:9px;}
+.sort-arrow{margin-left:3px;font-size:10px;}
 tbody tr{cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;}
 tbody tr:last-child{border-bottom:none;}
 tbody tr:hover{background:var(--surface2);}
-tbody tr.selected{background:#edf3fa;}
+tbody tr.selected{background:var(--accent-bg);}
 tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-child{padding-right:14px;}
-.td-name{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.td-mono{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
-.td-afd span{font-size:10px;font-weight:600;padding:2px 6px;border-radius:99px;white-space:nowrap;}
+.td-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.td-mono{font-family:'Figtree',sans-serif;font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);}
+.td-afd span{font-size:11px;font-weight:700;padding:2px 6px;border-radius:99px;white-space:nowrap;}
 .note-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--hint);}
 .add-row{padding:8px 16px;border-top:1px solid var(--border);}
-.btn-add{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 13px;border-radius:var(--r);border:1px solid var(--text);background:var(--text);color:#fff;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .1s;}
-.btn-add:hover{background:#333;}
+.btn-add{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;padding:7px 13px;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .1s;}
+.btn-add:hover{background:var(--accent-hover);}
 
 /* RIGHT */
 .right-wrapper{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
 .right-top{flex-shrink:0;padding:20px 20px 0;display:flex;flex-direction:column;gap:14px;}
 .right-scroll{flex:1;overflow-y:auto;min-height:0;padding:14px 20px 20px;}
 #calSections{display:flex;flex-direction:column;gap:14px;}
-.cal-nav{display:flex;align-items:center;gap:8px;position:relative;flex-wrap:nowrap;} .cal-nav-title{font-size:20px;font-weight:600;letter-spacing:-.5px;margin-right:4px;}
-.cal-nav-title{font-size:20px;font-weight:600;letter-spacing:-.5px;}
-.cal-nav-title-btn{font-family:'DM Sans',sans-serif;font-size:20px;font-weight:600;letter-spacing:-.5px;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:4px 10px 4px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .12s;white-space:nowrap;}
+.cal-nav{display:flex;align-items:center;gap:8px;position:relative;flex-wrap:nowrap;} .cal-nav-title{font-size:21px;font-weight:700;letter-spacing:-.5px;margin-right:4px;}
+.cal-nav-title{font-size:21px;font-weight:700;letter-spacing:-.5px;}
+.cal-nav-title-btn{font-family:'Figtree',sans-serif;font-size:21px;font-weight:700;letter-spacing:-.5px;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:4px 10px 4px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .12s;white-space:nowrap;}
 .cal-nav-title-btn:hover{background:var(--border);}
-.cal-nav-title-btn::after{content:"▾";font-size:13px;color:var(--muted);margin-top:1px;}
-.cal-nav-sub{font-size:12px;color:var(--muted);font-weight:400;}
+.cal-nav-title-btn::after{content:"▾";font-size:14px;color:var(--muted);margin-top:1px;}
+.cal-nav-sub{font-size:13px;color:var(--muted);font-weight:500;}
 .month-picker{position:absolute;top:calc(100% + 6px);left:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:0 4px 20px rgba(0,0,0,.1);z-index:50;padding:12px;width:260px;display:none;}
 .month-picker.open{display:block;}
 .mp-header{display:flex;align-items:center;margin-bottom:10px;}
-.mp-year{font-size:14px;font-weight:600;flex:1;}
-.mp-nav{width:24px;height:24px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--muted);line-height:1;}
+.mp-year{font-size:15px;font-weight:700;flex:1;}
+.mp-nav{width:24px;height:24px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);line-height:1;}
 .mp-nav:hover{background:var(--surface2);}
 .mp-months{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
-.mp-month{font-size:12px;padding:6px 4px;text-align:center;border-radius:var(--r);cursor:pointer;color:var(--muted);transition:background .1s;}
+.mp-month{font-size:13px;padding:6px 4px;text-align:center;border-radius:var(--r);cursor:pointer;color:var(--muted);transition:background .1s;}
 .mp-month:hover{background:var(--surface2);color:var(--text);}
 .mp-month.current{background:var(--text);color:#fff;}
 .cal-nav-title:hover{opacity:.75;}
-.nav-btn{width:30px;height:30px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .1s;line-height:1;}
+.nav-btn{width:30px;height:30px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .1s;line-height:1;}
 .nav-btn:hover{background:var(--surface2);color:var(--text);}
 .stats-row{display:flex;gap:8px;}
 .stats-inline{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;flex-shrink:1;min-width:0;overflow:hidden;}
 .stat-pill{display:flex;align-items:center;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:4px 8px;white-space:nowrap;}
-.stat-pill-label{font-size:11px;color:var(--muted);font-weight:500;}
-.stat-pill-num{font-size:13px;font-weight:600;letter-spacing:-.3px;}
+.stat-pill-label{font-size:12px;color:var(--muted);font-weight:600;}
+.stat-pill-num{font-size:14px;font-weight:700;letter-spacing:-.3px;}
 .stat-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;}
-.stat-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.stat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
 .stat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.stat-num{font-size:28px;font-weight:600;letter-spacing:-1px;line-height:1;}
+.stat-num{font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1;}
 
 /* yearly avg */
 .yearly-avg{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;}
-.ya-header{display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:nowrap;min-width:0;}
-.ya-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+.ya-header{display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:nowrap;min-width:0;background:var(--hdr-bg,var(--surface2));}
+.ya-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
 
 .ya-vals{display:flex;gap:12px;margin-left:auto;align-items:center;flex-shrink:0;}
 .ya-val{display:flex;align-items:baseline;gap:6px;}
-.ya-val-label{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;}
-.ya-val-num{font-size:20px;font-weight:600;letter-spacing:-.5px;line-height:1;}
+.ya-val-label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;}
+.ya-val-num{font-size:21px;font-weight:700;letter-spacing:-.5px;line-height:1;}
 .ya-months{display:flex;gap:1px;background:var(--border);border-top:1px solid var(--border);} .ya-month-labels{background:var(--surface);padding:5px 8px;text-align:right;flex-shrink:0;}
 .ya-month{flex:1;background:var(--surface);padding:5px 2px;text-align:center;}
-.ya-mo-name{font-size:9px;color:var(--hint);text-transform:uppercase;letter-spacing:.2px;}
-.ya-mo-num{font-size:10px;font-weight:500;margin-top:1px;}
+.ya-mo-name{font-size:10px;color:var(--hint);text-transform:uppercase;letter-spacing:.2px;}
+.ya-mo-num{font-size:11px;font-weight:600;margin-top:1px;}
 
 /* cal sections */
 .cal-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;}
 .cal-sec-hdr{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);transition:background .1s;}
-.cal-sec-hdr:hover{background:var(--surface2);}
+.cal-sec-hdr:hover{filter:brightness(.97);}
 .sec-stripe{width:3px;height:18px;border-radius:2px;flex-shrink:0;}
-.sec-label{font-size:12px;font-weight:600;flex:1;}
-.sec-badge{font-size:11px;font-weight:600;padding:2px 9px;border-radius:99px;}
-.chevron{font-size:10px;color:var(--hint);transition:transform .2s;}
+.sec-label{font-size:13px;font-weight:700;flex:1;}
+.sec-badge{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;}
+.chevron{font-size:11px;color:var(--hint);transition:transform .2s;}
 .cal-section.collapsed .chevron{transform:rotate(-90deg);}
 .cal-section.collapsed .cal-sec-hdr{border-bottom:none;}
 .cal-section.collapsed .kids-grid,.cal-section.collapsed .no-kids{display:none;}
-.kids-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:1px;background:var(--border);}
-.kid-cell{background:var(--surface);padding:10px 12px;transition:background .1s;cursor:pointer;}
+.kids-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:0;background:var(--surface);margin:0 -1px -1px 0;}
+.kid-cell{background:var(--surface);padding:10px 12px;transition:background .1s;cursor:pointer;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
 .kid-cell:hover{background:var(--surface2);}
-.kid-cell.hl{background:#edf3fa;}
+.kid-cell.hl{background:var(--accent-bg);}
 .kid-cell.kc-green{background:#edf7f0;border-left:3px solid var(--vu-mid);}
 .kid-cell.kc-yellow{background:#fdf8e8;border-left:3px solid var(--sk-mid);}
 .kid-cell.kc-red{background:#fdf0f0;border-left:3px solid var(--ud-mid);}
@@ -136,34 +142,34 @@ tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-
 .kid-cell.kc-yellow.hl{background:#f8edcc;}
 .kid-cell.kc-red.hl{background:#f8dede;}
 .kid-name-row{display:flex;align-items:center;gap:5px;}
-.kid-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kid-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .skolestart-dot{width:7px;height:7px;border-radius:50%;background:var(--sk-mid);flex-shrink:0;}
-.kid-age{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px;}
-.kid-note{font-size:11px;color:var(--hint);margin-top:3px;font-style:italic;line-height:1.3;}
-.no-kids{padding:14px 16px;font-size:12px;color:var(--hint);}
+.kid-age{font-family:'Figtree',sans-serif;font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);margin-top:2px;}
+.kid-note{font-size:12px;color:var(--hint);margin-top:3px;font-style:italic;line-height:1.3;}
+.no-kids{padding:14px 16px;font-size:13px;color:var(--hint);}
 
 /* modal */
 .overlay{display:none;position:fixed;inset:0;background:rgba(20,18,14,.4);z-index:200;align-items:center;justify-content:center;}
 .overlay.open{display:flex;}
 .modal{background:var(--surface);border-radius:var(--rl);padding:22px;width:400px;max-width:95vw;}
-.modal h3{font-size:15px;font-weight:600;margin-bottom:16px;}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:16px;}
 .form-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
-.form-row label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);}
-.form-row input,.form-row textarea{font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;transition:border-color .15s;}
-.form-row input:focus,.form-row textarea:focus{border-color:var(--vu-mid);}
+.form-row label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);}
+.form-row input,.form-row textarea{font-family:'Figtree',sans-serif;font-size:14px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;transition:border-color .15s;}
+.form-row input:focus,.form-row textarea:focus{border-color:var(--accent);}
 .form-row textarea{resize:vertical;min-height:56px;}
 .modal-footer{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:18px;}
 .modal-right{display:flex;gap:8px;}
-.btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:6px 13px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background .1s;white-space:nowrap;}
+.btn{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;padding:6px 13px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:background .1s;white-space:nowrap;}
 .btn:hover{background:var(--surface2);}
-.btn-primary{background:var(--text);color:#fff;border-color:var(--text);}
-.btn-primary:hover{background:#333;}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-primary:hover{background:var(--accent-hover);}
 .btn-danger{color:var(--ud);border-color:#e8b4b4;}
 .btn-danger:hover{background:var(--ud-bg);}
 .tab-bar{display:flex;gap:2px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;align-items:center;}
-.tab-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 18px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s;}
+.tab-btn{font-family:'Figtree',sans-serif;font-size:14px;font-weight:600;padding:10px 18px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s;}
 .tab-btn:hover{color:var(--text);}
-.tab-btn.active{color:var(--text);border-bottom-color:var(--text);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700;}
 
 /* Årsplan */
 @media print {
@@ -173,20 +179,20 @@ tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-
   .ap-print-btn { display: none !important; }
 }
 .ap-year-nav{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.ap-year-title{font-size:20px;font-weight:600;letter-spacing:-.5px;flex:1;}
+.ap-year-title{font-size:21px;font-weight:700;letter-spacing:-.5px;flex:1;}
 .ap-section{margin-bottom:32px;}
-.ap-section-title{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.ap-table{width:100%;border-collapse:collapse;font-size:12px;}
-.ap-table th{background:var(--bg);padding:6px 8px;text-align:center;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--hint);border:1px solid var(--border);position:sticky;top:0;z-index:2;}
+.ap-section-title{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.ap-table{width:100%;border-collapse:collapse;font-size:13px;}
+.ap-table th{background:var(--bg);padding:6px 8px;text-align:center;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--hint);border:1px solid var(--border);position:sticky;top:0;z-index:2;}
 .ap-table th:first-child{text-align:left;min-width:120px;position:sticky;left:0;z-index:3;background:var(--bg);}
-.ap-table td{padding:5px 8px;border:1px solid var(--border);text-align:center;color:var(--muted);font-size:11px;background:#fff;}
-.ap-table td:first-child{text-align:left;font-weight:500;color:var(--text);background:var(--surface);position:sticky;left:0;z-index:1;}
-.ap-table td.active{background:#f0ebfa;color:#4a2d70;font-weight:500;}
-.ap-table td.active-bh{background:#e8f0fb;color:#1a3f70;font-weight:500;}
-.ap-table td.starts{background:#edf7f0;font-weight:600;}
+.ap-table td{padding:5px 8px;border:1px solid var(--border);text-align:center;color:var(--muted);font-size:12px;background:#fff;}
+.ap-table td:first-child{text-align:left;font-weight:600;color:var(--text);background:var(--surface);position:sticky;left:0;z-index:1;}
+.ap-table td.active{background:#f0ebfa;color:#4a2d70;font-weight:600;}
+.ap-table td.active-bh{background:#e8f0fb;color:#1a3f70;font-weight:600;}
+.ap-table td.starts{background:#edf7f0;font-weight:700;}
 .ap-table td.ends{background:#fdf0f0;}
-.ap-count-row td{font-weight:600;background:var(--bg);font-size:12px;}
-.ap-avg-row td{font-weight:600;background:var(--surface2);color:var(--text);}
+.ap-count-row td{font-weight:700;background:var(--bg);font-size:13px;}
+.ap-avg-row td{font-weight:700;background:var(--surface2);color:var(--text);}
 .cap-ok{color:var(--vu);}
 .cap-warn{color:var(--sk);}
 .cap-over{color:var(--ud);}
@@ -195,25 +201,25 @@ tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-
 .tr-year-nav{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .tr-month-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:12px;overflow:hidden;}
 .tr-month-hdr{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border);}
-.tr-month-name{font-size:14px;font-weight:600;flex:1;}
+.tr-month-name{font-size:15px;font-weight:700;flex:1;}
 .tr-counts{display:flex;gap:16px;}
-.tr-count{font-size:12px;color:var(--muted);}
-.tr-count span{font-weight:600;color:var(--text);}
+.tr-count{font-size:13px;color:var(--muted);}
+.tr-count span{font-weight:700;color:var(--text);}
 .tr-rows{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
 .tr-col{background:var(--surface);padding:10px 14px;}
-.tr-col-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--hint);margin-bottom:8px;}
-.tr-child{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;}
-.tr-child-name{font-weight:500;flex:1;}
-.tr-child-tag{font-size:10px;padding:1px 6px;border-radius:99px;font-weight:600;}
-.tr-empty{padding:14px 16px;font-size:12px;color:var(--hint);background:var(--surface);}
+.tr-col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--hint);margin-bottom:8px;}
+.tr-child{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:13px;}
+.tr-child-name{font-weight:600;flex:1;}
+.tr-child-tag{font-size:11px;padding:1px 6px;border-radius:99px;font-weight:700;}
+.tr-empty{padding:14px 16px;font-size:13px;color:var(--hint);background:var(--surface);}
 
 /* Capacity bar in yearly avg */
 .cap-bar-wrap{display:flex;align-items:center;gap:8px;margin-top:6px;}
-.cap-bar-label{font-size:10px;color:var(--muted);width:22px;text-align:right;flex-shrink:0;}
+.cap-bar-label{font-size:11px;color:var(--muted);width:22px;text-align:right;flex-shrink:0;}
 .cap-bar-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
 .cap-bar-fill{height:100%;border-radius:3px;transition:width .3s;}
 
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--text);color:#fff;font-size:12px;padding:9px 18px;border-radius:var(--r);z-index:999;transition:transform .22s ease;pointer-events:none;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--text);color:#fff;font-size:13px;padding:9px 18px;border-radius:var(--r);z-index:999;transition:transform .22s ease;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
@@ -225,30 +231,30 @@ tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-
 <div id="loginScreen" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:36px;width:360px;text-align:center;">
     <img src="https://bogenseprivate.dk/wp-content/uploads/2020/04/logo.png" style="height:48px;margin-bottom:16px;">
-    <div style="font-size:18px;font-weight:600;margin-bottom:4px;">Børneoversigt</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:24px;">Børnehuset Sct. Anna</div>
-    <input type="email" id="loginEmail" placeholder="Email" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;margin-bottom:10px;outline:none;background:var(--bg);color:var(--text);" autocomplete="username">
-    <input type="password" id="loginInput" placeholder="Adgangskode" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;margin-bottom:10px;outline:none;background:var(--bg);color:var(--text);" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-    <button onclick="doLogin()" style="width:100%;padding:10px;background:var(--text);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;">Log ind</button>
-    <div id="loginError" style="color:var(--ud);font-size:12px;margin-top:8px;display:none;">Forkert email eller adgangskode</div>
+    <div style="font-size:19px;font-weight:700;margin-bottom:4px;">Børneoversigt</div>
+    <div style="font-size:14px;color:var(--muted);margin-bottom:24px;">Børnehuset Sct. Anna</div>
+    <input type="email" id="loginEmail" placeholder="Email" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);font-family:'Figtree',sans-serif;font-size:15px;margin-bottom:10px;outline:none;background:var(--bg);color:var(--text);" autocomplete="username">
+    <input type="password" id="loginInput" placeholder="Adgangskode" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);font-family:'Figtree',sans-serif;font-size:15px;margin-bottom:10px;outline:none;background:var(--bg);color:var(--text);" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button onclick="doLogin()" style="width:100%;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:'Figtree',sans-serif;font-size:15px;font-weight:600;cursor:pointer;">Log ind</button>
+    <div id="loginError" style="color:var(--ud);font-size:13px;margin-top:8px;display:none;">Forkert email eller adgangskode</div>
   </div>
 </div>
 <header>
-  <div class="logo"><img src="https://bogenseprivate.dk/wp-content/uploads/2020/04/logo.png" style="height:36px;width:auto;object-fit:contain;">Børnehuset Sct. Anna <span style="color:var(--hint);font-weight:400;margin:0 4px">–</span> Børneoversigt</div>
+  <div class="logo"><img src="https://bogenseprivate.dk/wp-content/uploads/2020/04/logo.png" style="height:36px;width:auto;object-fit:contain;">Børnehuset Sct. Anna <span style="color:var(--hint);font-weight:500;margin:0 4px">–</span> Børneoversigt</div>
   <div class="header-right" id="saveStatus"></div>
 </header>
 <div class="tab-bar">
   <button class="tab-btn active" id="tab-oversigt" onclick="switchTab('oversigt')">Oversigt</button>
   <button class="tab-btn" id="tab-aarsplan" onclick="switchTab('aarsplan')">Årsplan</button>
   <button class="tab-btn" id="tab-trafik" onclick="switchTab('trafik')">Trafik</button>
-  <div id="tabAvail" style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);padding:0 16px;"></div>
+  <div id="tabAvail" style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:0 16px;"></div>
 </div>
 <div class="workspace" id="pane-oversigt">
   <!-- LEFT -->
   <div class="left-panel">
     <div class="panel-header">
       <div class="panel-title">Alle børn</div>
-      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--hint)" id="listCount"></span>
+      <span style="font-family:'Figtree',sans-serif;font-variant-numeric:tabular-nums;font-size:12px;color:var(--hint)" id="listCount"></span>
     </div>
     <div class="filter-bar">
       <button class="filter-btn active" id="fb-aktive"   onclick="setFilter('aktive')">Aktive</button>
@@ -292,7 +298,7 @@ tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-
         <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
           <button class="nav-btn" onclick="stepMonth(-1)">&#8249;</button>
           <button class="nav-btn" onclick="stepMonth(1)">&#8250;</button>
-          <button class="btn" onclick="goToday()" style="font-size:11px">I dag</button>
+          <button class="btn" onclick="goToday()" style="font-size:12px">I dag</button>
         </div>
       </div>
       <div class="yearly-avg" id="yearlyAvg"></div>
@@ -317,8 +323,8 @@ tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3 id="modalTitle">Tilføj barn</h3>
-    <div id="onskerBanner" style="display:none;background:#fff8e6;border:1px solid #c49a2a;border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:12px;color:#7a5c00;display:flex;align-items:center;gap:8px;">
-      <span style="font-size:16px">★</span>
+    <div id="onskerBanner" style="display:none;background:#fff8e6;border:1px solid #c49a2a;border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:13px;color:#7a5c00;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:17px">★</span>
       <span>Dette barn er markeret som <strong>Ønsker plads</strong></span>
     </div>
     <div class="form-row"><label>Navn</label><input type="text" id="fNavn" placeholder="Barnets fulde navn"></div>
@@ -326,28 +332,28 @@ tbody td{padding:7px 10px;vertical-align:middle;overflow:hidden;} tbody td:last-
     <div class="form-row"><label>Indmeldelsesdato</label><input type="date" id="fInd"></div>
     <div class="form-row"><label>Bemærkning</label><textarea id="fNote" placeholder="Valgfri note..."></textarea></div>
     <div class="form-row">
-      <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;">
         <input type="checkbox" id="fSkoleudsat" onchange="updateSkoleudsatHint()" style="width:15px;height:15px;accent-color:var(--sk-mid);cursor:pointer;">
         Skoleudsat (går et ekstra år i børnehave)
       </label>
-      <div id="skoleudsatHint" style="font-size:11px;color:var(--hint);margin-top:2px;"></div>
+      <div id="skoleudsatHint" style="font-size:12px;color:var(--hint);margin-top:2px;"></div>
     </div>
     <div class="form-row">
       <label>Udmeldt fra (valgfri)</label>
       <div style="display:flex;gap:8px;align-items:center;">
         <input type="date" id="fUdmeldt" style="flex:1;">
-        <button type="button" onclick="document.getElementById('fUdmeldt').value=new Date().toISOString().slice(0,10)" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;">I dag</button>
-        <button type="button" onclick="document.getElementById('fUdmeldt').value=''" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;">Ryd</button>
+        <button type="button" onclick="document.getElementById('fUdmeldt').value=new Date().toISOString().slice(0,10)" style="font-family:'Figtree',sans-serif;font-size:12px;font-weight:600;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;">I dag</button>
+        <button type="button" onclick="document.getElementById('fUdmeldt').value=''" style="font-family:'Figtree',sans-serif;font-size:12px;font-weight:600;padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;">Ryd</button>
       </div>
-      <div style="font-size:11px;color:var(--hint);margin-top:2px;">Barnet tæller stadig med i afdelingen og i gennemsnit for perioden inden denne dato.</div>
+      <div style="font-size:12px;color:var(--hint);margin-top:2px;">Barnet tæller stadig med i afdelingen og i gennemsnit for perioden inden denne dato.</div>
     </div>
     <div id="godkendBtn" style="display:none;margin-bottom:12px;">
-      <button onclick="godkendFromModal()" style="width:100%;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px;border-radius:var(--r);border:none;background:#2d8a4e;color:#fff;cursor:pointer;">Godkend til venteliste →</button>
+      <button onclick="godkendFromModal()" style="width:100%;font-family:'Figtree',sans-serif;font-size:14px;font-weight:700;padding:10px;border-radius:var(--r);border:none;background:#2d8a4e;color:#fff;cursor:pointer;">Godkend til venteliste →</button>
     </div>
     <div class="modal-footer">
       <button class="btn btn-danger" id="deleteBtn" onclick="deleteChild()" style="display:none">Slet barn</button>
       <div class="modal-right">
-        <label id="onskerToggleBtn" style="display:none;align-items:center;gap:8px;font-size:13px;color:var(--text);cursor:pointer;">
+        <label id="onskerToggleBtn" style="display:none;align-items:center;gap:8px;font-size:14px;color:var(--text);cursor:pointer;">
           <input type="checkbox" id="onskerCheck" style="width:15px;height:15px;accent-color:#c49a2a;cursor:pointer;">
           Ønsker plads
         </label>
@@ -682,11 +688,13 @@ function renderLeft() {
   updateSortHeaders();
   document.getElementById('listCount').textContent = children.length+' børn';
 
-  const afdMap = { vuggestue:{bg:'var(--vu-bg)',c:'var(--vu)',label:'Vuggestue'}, boernehave:{bg:'var(--bh-bg)',c:'var(--bh)',label:'Børnehave'}, skolestart:{bg:'var(--sk-bg)',c:'var(--sk)',label:'BH – skolestart'}, venteliste:{bg:'var(--vl-bg)',c:'var(--vl)',label:'Venteliste'}, ønsker:{bg:'#fff8e6',c:'#7a5c00',label:'Ønsker'}, udmeldt:{bg:'var(--ud-bg)',c:'var(--ud)',label:'Udmeldt'} };
+  const afdMap = { vuggestue:{bg:'var(--vu-bg)',c:'var(--vu)',label:'Vuggestue'}, boernehave:{bg:'var(--bh-bg)',c:'var(--bh)',label:'Børnehave'}, skolestart:{bg:'var(--ss-bg)',c:'var(--ss)',label:'BH – skolestart'}, venteliste:{bg:'var(--vl-bg)',c:'var(--vl)',label:'Venteliste'}, ønsker:{bg:'#fff8e6',c:'#7a5c00',label:'Ønsker'}, udmeldt:{bg:'var(--ud-bg)',c:'var(--ud)',label:'Udmeldt'} };
 
   function rowHtml(b) {
     const afd = getAfd(b, sim);
-    const s = afdMap[afd];
+    const s = (b.skoleudsat && (afd==='boernehave'||afd==='skolestart'))
+      ? {bg:'var(--su-bg)',c:'var(--su)',label:'BH – skoleudsat'}
+      : afdMap[afd];
     const sel = b.i===selectedIdx ? 'selected' : '';
     const tilf = b.tilfojet>1000 ? new Date(b.tilfojet).toLocaleDateString('da-DK',{day:'2-digit',month:'2-digit',year:'2-digit'}) : '#'+b.tilfojet;
     return `<tr class="${sel}" data-kidclick="${b.i}" style="cursor:pointer">
@@ -726,8 +734,8 @@ function renderLeft() {
     const rowsHtml = collapsed ? '' : kids.map(rowHtml).join('');
     return `<tr class="udmeldt-year-hdr" data-yeartoggle="${y}" style="cursor:pointer;background:var(--surface2);">
       <td colspan="6" style="padding:8px 20px;">
-        <div style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--ud);">
-          <span style="transition:transform .15s;display:inline-block;transform:rotate(${collapsed?'-90deg':'0deg'});font-size:9px;color:var(--hint);">▼</span>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--ud);">
+          <span style="transition:transform .15s;display:inline-block;transform:rotate(${collapsed?'-90deg':'0deg'});font-size:10px;color:var(--hint);">▼</span>
           Udmeldt ${y} (${kids.length})
         </div>
       </td>
@@ -819,14 +827,15 @@ function renderRight() {
               <div class="kid-name">${b.navn}</div>
               ${b.note?`<div class="skolestart-dot" style="background:var(--sk-mid)" title="Har en bemærkning"></div>`:''}
             </div>
-            <div class="kid-age">${ageStr(b.født,sim)}${b.isSkolestart?' · <span style=\'color:var(--sk);font-weight:500\'>Skolestart</span>':''}${b.skoleudsat?' · <span style=\'color:var(--muted);font-weight:500\'>Skoleudsat</span>':''}</div>
-            ${b.ønsker?`<button onclick="godkendOnsker(${b.i},event)" style="margin-top:5px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;border:1px solid #c49a2a;background:#fff8e6;color:#7a5c00;cursor:pointer;">Godkend →</button>`:''}
+            <div class="kid-age">${ageStr(b.født,sim)}</div>
+            ${(b.skoleudsat && s.key==='boernehave')?'<div style="margin-top:4px"><span class="su-tag">Skoleudsat</span></div>':(b.isSkolestart?'<div style="margin-top:4px"><span class="ss-tag">Skolestart</span></div>':'')}
+            ${b.ønsker?`<button onclick="godkendOnsker(${b.i},event)" style="margin-top:6px;font-family:'Figtree',sans-serif;font-size:11px;font-weight:700;padding:4px 18px;min-width:104px;border-radius:99px;border:1px solid var(--accent,#2f6b4f);background:var(--accent,#2f6b4f);color:#fff;cursor:pointer;" onmouseover="this.style.background='var(--accent-hover,#25573f)'" onmouseout="this.style.background='var(--accent,#2f6b4f)'">Godkend →</button>`:''}
           </div>`).join('')}</div>`;
     return `<div class="cal-section${isCollapsed?' collapsed':''}" id="cs-${s.key}">
-      <div class="cal-sec-hdr" onclick="toggleSec('cs-${s.key}')">
+      <div class="cal-sec-hdr" style="background:var(--hdr-bg,${s.bg})" onclick="toggleSec('cs-${s.key}')">
         <div class="sec-stripe" style="background:${s.mid}"></div>
         <div class="sec-label" style="color:${s.c}">${s.label}</div>
-        <div class="sec-badge" style="background:${s.bg};color:${s.c}">${kids.length}</div>
+        <div class="sec-badge" style="background:var(--surface);color:${s.c}">${kids.length}</div>
         <div class="chevron">▼</div>
       </div>${body}</div>`;
   }).join('');
@@ -964,11 +973,11 @@ function renderYearlyAvg() {
         </div>
       </div>
     </div>
-    <div class="ya-months"><div class="ya-month-labels"><div class="ya-mo-name">&nbsp;</div><div class="ya-mo-num" style="color:var(--bh-mid);font-weight:600">BH</div><div class="ya-mo-num" style="color:var(--vu-mid);font-weight:600">VU</div></div>${MO_S.map((mo,i)=>`
+    <div class="ya-months"><div class="ya-month-labels"><div class="ya-mo-name">&nbsp;</div><div class="ya-mo-num" style="color:var(--bh);font-weight:700">BH</div><div class="ya-mo-num" style="color:var(--vu);font-weight:700">VU</div></div>${MO_S.map((mo,i)=>`
       <div class="ya-month">
         <div class="ya-mo-name">${mo}</div>
-        <div class="ya-mo-num" style="color:var(--bh-mid)">${bh[i]}</div>
-        <div class="ya-mo-num" style="color:var(--vu-mid)">${vu[i]}</div>
+        <div class="ya-mo-num" style="color:var(--bh)">${bh[i]}</div>
+        <div class="ya-mo-num" style="color:var(--vu)">${vu[i]}</div>
       </div>`).join('')}</div>`;
 }
 
@@ -1144,7 +1153,7 @@ function renderAarsplan() {
     return `<div class="ap-section">
       <div class="ap-section-title">
         <span style="color:${color}">${title}</span>
-        <span style="font-size:11px;font-weight:400;color:var(--muted)">Maks gns. ${maxAvg} · Gns. dette år: <span class="${capClass}" style="font-weight:600">${avg}</span></span>
+        <span style="font-size:12px;font-weight:500;color:var(--muted)">Maks gns. ${maxAvg} · Gns. dette år: <span class="${capClass}" style="font-weight:700">${avg}</span></span>
       </div>
       <div style="overflow-x:auto">
         <table class="ap-table">
@@ -1166,7 +1175,7 @@ function renderAarsplan() {
       <span class="ap-year-title">Årsplan ${apYear}</span>
       <button class="nav-btn" onclick="apYear--;renderAarsplan()">&#8249;</button>
       <button class="nav-btn" onclick="apYear++;renderAarsplan()">&#8250;</button>
-      <button class="ap-print-btn" onclick="printAarsplan()" style="margin-left:auto;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='var(--surface)'">Udskriv</button>
+      <button class="ap-print-btn" onclick="printAarsplan()" style="margin-left:auto;font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='var(--surface)'">Udskriv</button>
     </div>
     ${buildSection(bhFilter,'Børnehave','var(--bh)',MAX_BH)}
     ${buildSection(vuFilter,'Vuggestue','var(--vu)',MAX_VU)}
@@ -1205,8 +1214,8 @@ function renderTrafik() {
     const vuCount = children.filter(b => getAfd(b,d)==='vuggestue').length;
 
     const afdLabel = {vuggestue:'Vuggestue',boernehave:'Børnehave',skolestart:'Skolestart',venteliste:'Venteliste',udmeldt:'Udmeldt'};
-    const afdColor = {vuggestue:'var(--vu)',boernehave:'var(--bh)',skolestart:'var(--sk)',venteliste:'var(--vl)',udmeldt:'var(--ud)'};
-    const afdBg    = {vuggestue:'var(--vu-bg)',boernehave:'var(--bh-bg)',skolestart:'var(--sk-bg)',venteliste:'var(--vl-bg)',udmeldt:'var(--ud-bg)'};
+    const afdColor = {vuggestue:'var(--vu)',boernehave:'var(--bh)',skolestart:'var(--ss)',venteliste:'var(--vl)',udmeldt:'var(--ud)'};
+    const afdBg    = {vuggestue:'var(--vu-bg)',boernehave:'var(--bh-bg)',skolestart:'var(--ss-bg)',venteliste:'var(--vl-bg)',udmeldt:'var(--ud-bg)'};
 
     const allEvents = [...starters.map(e=>({...e,type:'start'})), ...movers.map(e=>({...e,type:'move'})), ...leavers.map(e=>({...e,type:'leave'}))];
     if (!allEvents.length) return `<div class="tr-month-block">
@@ -1227,17 +1236,17 @@ function renderTrafik() {
       ? inEvents.map(e=>`<div class="tr-child">
           <span class="tr-child-name">${e.b.navn}</span>
           <span class="tr-child-tag" style="background:${afdBg[e.to]};color:${afdColor[e.to]}">${afdLabel[e.to]}</span>
-          ${e.type==='move'?`<span style="font-size:10px;color:var(--hint)">fra ${afdLabel[e.from]}</span>`:''}
+          ${e.type==='move'?`<span style="font-size:11px;color:var(--hint)">fra ${afdLabel[e.from]}</span>`:''}
         </div>`).join('')
-      : '<span style="font-size:11px;color:var(--hint)">Ingen</span>';
+      : '<span style="font-size:12px;color:var(--hint)">Ingen</span>';
 
     const outHtml = outEvents.length
       ? outEvents.map(e=>`<div class="tr-child">
           <span class="tr-child-name">${e.b.navn}</span>
           <span class="tr-child-tag" style="background:${afdBg[e.from]};color:${afdColor[e.from]}">${afdLabel[e.from]}</span>
-          ${e.type==='move'?`<span style="font-size:10px;color:var(--hint)">til ${afdLabel[e.to]}</span>`:''}
+          ${e.type==='move'?`<span style="font-size:11px;color:var(--hint)">til ${afdLabel[e.to]}</span>`:''}
         </div>`).join('')
-      : '<span style="font-size:11px;color:var(--hint)">Ingen</span>';
+      : '<span style="font-size:12px;color:var(--hint)">Ingen</span>';
 
     return `<div class="tr-month-block">
       <div class="tr-month-hdr">
@@ -1266,9 +1275,9 @@ function renderTrafik() {
       <span class="ap-year-title">Trafik ${trYear}</span>
       <button class="nav-btn" onclick="trYear--;renderTrafik()">&#8249;</button>
       <button class="nav-btn" onclick="trYear++;renderTrafik()">&#8250;</button>
-      <button onclick="printTrafik()" style="margin-left:auto;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='var(--surface)'">Udskriv</button>
+      <button onclick="printTrafik()" style="margin-left:auto;font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='var(--surface)'">Udskriv</button>
     </div>
-    ${blocks || '<p style="color:var(--hint);font-size:13px">Ingen trafik dette år</p>'}
+    ${blocks || '<p style="color:var(--hint);font-size:14px">Ingen trafik dette år</p>'}
     <div style="height:80px;background:var(--bg);border-radius:var(--rl);margin-top:12px;"></div>
   `;
 }
